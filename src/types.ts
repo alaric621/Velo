@@ -21,6 +21,7 @@ export interface ScaffoldConfig {
   title: string;
   description?: string;
   include?: string[];
+  single?: boolean;
   run?: RunTask[];
   hook?: Hook[];
 }

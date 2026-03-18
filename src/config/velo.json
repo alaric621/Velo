@@ -6,6 +6,7 @@
                   "router",
                   "pinia"
             ],
+            "single": false,
             "run": [
                   {
                         "type": "copy",

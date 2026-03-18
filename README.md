@@ -61,7 +61,7 @@
 ```
 
 说明：
-- 选择 `vue-core` 后，会出现 `router` 和 `pinia` 的多选。
+- 选择 `vue-core` 后，会出现 `router` 和 `pinia` 的子模块选择（默认多选，可通过 `single: true` 配置为单选）。
 - `error-test` 用于验证熔断逻辑，`pre` 失败会直接终止流程。
 
 ## 配置字段 🛠️
@@ -71,6 +71,7 @@
 | `title` | `string` | 是 | 模板唯一标识。 |
 | `description` | `string` | 否 | 交互菜单中的提示信息。 |
 | `include` | `string[]` | 否 | 子模块标题列表；在交互中递归选择。 |
+| `single` | `boolean` | 否 | `include` 的选择方式；默认 `false`(多选)，`true` 为单选并支持“跳过”。 |
 | `run` | `{ type, ... }[]` | 否 | 任务队列，支持 `type: "copy"`（`paths` 必填）和 `type: "shell"`（`command` 必填）。 |
 | `hook` | `{ event, command, description? }[]` | 否 | 命令钩子，`event` 仅支持 `pre` 或 `post`。 |
 
