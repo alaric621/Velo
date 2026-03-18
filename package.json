@@ -11,6 +11,9 @@
     "watch": "tsc --watch",
     "test": "vitest"
   },
+  "files": [
+    "dist/"
+  ],
   "engines": {
     "node": ">=16.0.0"
   },

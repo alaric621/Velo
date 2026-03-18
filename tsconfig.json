@@ -12,6 +12,7 @@
     "noImplicitAny": true,                       /* 不允许隐式的 any 类型 */
     "noUnusedLocals": true,
     "noEmitOnError": false,
+    "resolvePackageJsonExports": true,
     /* 模块兼容性 */
     "esModuleInterop": true,                     /* 允许从没有默认导出的模块中默认导入 */
     "allowSyntheticDefaultImports": true,        /* 允许合成默认导入 */
@@ -22,7 +23,6 @@
     "rootDir": "./src",                          /* 源码目录 */
     "resolveJsonModule": true,                   /* 允许导入 .json 文件（你的配置核心） */
     "isolatedModules": true,                     /* 确保每个文件都可以安全地转译 */
-    
     /* 装饰器与元数据（如果后续用 NestJS 等框架可能需要） */
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
