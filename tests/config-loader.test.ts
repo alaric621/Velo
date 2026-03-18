@@ -66,7 +66,7 @@ describe('config-loader', () => {
         homedir: '/tmp/home',
         platform: 'linux',
       }),
-    ).toBe('/tmp/velo.json');
+    ).toBe(path.resolve('/tmp/velo.json'));
   });
 
   it('rewrites the config file when forced', async () => {
