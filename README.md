@@ -120,6 +120,25 @@ velo config init --force
 velo config edit
 ```
 
+## 发布产物与安装
+
+每次 `main` 分支更新后会生成一个 dev 预发布，并自动附带以下安装包：
+
+- Linux: `velo_<tag>_linux_amd64.deb`
+- macOS: `velo_<tag>_darwin_universal.tar.gz`
+- Windows: `velo_<tag>_windows_x64.exe`
+- Windows: `velo_<tag>_windows_x64.zip`
+
+下载入口：
+
+- GitHub Releases: `https://github.com/alaric621/Velo/releases`
+
+如果需要从 GitHub Packages 安装 npm 包，可使用：
+
+```bash
+npm i -g @alaric621/velo
+```
+
 ## 项目结构
 
 ```text
