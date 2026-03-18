@@ -1,4 +1,4 @@
-# velo
+# velo ⚡
 
 `velo` 是一个基于配置驱动的脚手架 CLI。首次运行时会自动在用户配置目录生成配置文件，随后优先读取用户配置；如果你显式传入配置路径，也会优先使用该路径。通过交互选择模板后按顺序执行：
 
@@ -6,7 +6,7 @@
 2. `copy`（复制模板文件到当前目录）
 3. `post` hook（初始化动作）
 
-## 配置加载顺序
+## 配置加载顺序 📚
 
 1. `velo --config /path/to/config.json`
 2. `VELO_CONFIG_PATH=/path/to/config.json velo`
@@ -19,7 +19,7 @@
 - macOS: `~/Library/Application Support/velo/config.json`
 - Windows: `%APPDATA%\\velo\\config.json`
 
-## 当前默认配置模板
+## 当前默认配置模板 🧩
 
 内置默认模板文件：`src/config/velo.json`
 
@@ -64,7 +64,7 @@
 - 选择 `vue-core` 后，会出现 `router` 和 `pinia` 的多选。
 - `error-test` 用于验证熔断逻辑，`pre` 失败会直接终止流程。
 
-## 配置字段
+## 配置字段 🛠️
 
 | 字段 | 类型 | 必填 | 说明 |
 | :--- | :--- | :--- | :--- |
@@ -74,7 +74,7 @@
 | `copy` | `string[]` | 否 | 需要复制到当前工作目录的源路径。 |
 | `hook` | `{ event, command, description? }[]` | 否 | 命令钩子，`event` 仅支持 `pre` 或 `post`。 |
 
-## 运行方式
+## 运行方式 🚀
 
 安装依赖：
 
@@ -120,7 +120,7 @@ velo config init --force
 velo config edit
 ```
 
-## 发布产物与安装
+## 发布产物与安装 📦
 
 每次 `main` 分支更新后会生成一个 dev 预发布，并自动附带以下安装包：
 
@@ -129,7 +129,7 @@ velo config edit
 - Windows: `velo_<tag>_windows_x64.exe`
 - Windows: `velo_<tag>_windows_x64.zip`
 
-下载入口：
+下载入口 🔗：
 
 - GitHub Releases: `https://github.com/alaric621/Velo/releases`
 
@@ -139,7 +139,7 @@ velo config edit
 npm i -g @alaric621/velo
 ```
 
-## 项目结构
+## 项目结构 🗂️
 
 ```text
 velo/
@@ -154,6 +154,6 @@ velo/
 └── .github/workflows/      # CI / Release 工作流
 ```
 
-## License
+## License 📄
 
 MIT
