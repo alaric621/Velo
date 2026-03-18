@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 import * as p from '@clack/prompts';
-import rawConfigs from './config/velo.json';
+import { loadConfigs } from './config-loader';
 import { runCopy, runHooks } from './engine';
 import { createWorkflow } from './prompts';
-import type { ScaffoldConfig } from './types';
 
 async function main() {
   p.intro('✨ Velo Scaffolding Tool');
 
   try {
+    const { configs, configPath, initialized } = await loadConfigs();
+    if (initialized) {
+      p.log.message(`已初始化用户配置: ${configPath}`);
+    }
+
     // 1. 交互并获取有序的任务数组
     // 比如结果是：[atomConfig, aaaConfig, bbbConfig]
-    const workflows = await createWorkflow(rawConfigs as ScaffoldConfig[]);
+    const workflows = await createWorkflow(configs);
 
     for (const workflow of workflows) {
       await runHooks(workflow, 'pre');
