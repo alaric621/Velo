@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import defaultConfigs from '../src/config/velo.json';
-import { loadConfigs, resolveConfigPath } from '../src/config-loader';
+import { initConfigFile, loadConfigs, resolveConfigPath } from '../src/config-loader';
 
 const tempRoots: string[] = [];
 
@@ -67,5 +67,26 @@ describe('config-loader', () => {
         platform: 'linux',
       }),
     ).toBe('/tmp/velo.json');
+  });
+
+  it('rewrites the config file when forced', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'velo-config-loader-'));
+    tempRoots.push(root);
+
+    const configPath = path.join(root, '.config', 'velo', 'config.json');
+    const customConfigs = [{ title: 'custom-template', copy: ['./x'] }];
+
+    await fs.ensureDir(path.dirname(configPath));
+    await fs.writeJson(configPath, customConfigs, { spaces: 2 });
+
+    const result = await initConfigFile({
+      env: {},
+      force: true,
+      homedir: root,
+      platform: 'linux',
+    });
+
+    expect(result.initialized).toBe(true);
+    expect(await fs.readJson(configPath)).toEqual(defaultConfigs);
   });
 });

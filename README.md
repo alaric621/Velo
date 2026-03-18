@@ -107,6 +107,19 @@ velo
 velo --config ./velo.config.json
 ```
 
+初始化默认配置：
+
+```bash
+velo config init
+velo config init --force
+```
+
+编辑配置：
+
+```bash
+velo config edit
+```
+
 ## 项目结构
 
 ```text

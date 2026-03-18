@@ -1,0 +1,71 @@
+name: Linux Package
+
+on:
+  release:
+    types:
+      - published
+      - prereleased
+
+concurrency:
+  group: linux-package-${{ github.event.release.id }}
+  cancel-in-progress: true
+
+jobs:
+  build-linux-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test
+        run: pnpm run test -- --run
+
+      - name: Compute package metadata
+        id: package_meta
+        shell: bash
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [[ "${TAG}" == v* ]]; then
+            VERSION="${TAG#v}"
+          else
+            VERSION="0.0.0~${TAG//-/.}"
+          fi
+          FILE_NAME="velo_${TAG}_linux_amd64.deb"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "file_name=${FILE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Linux package
+        run: |
+          chmod +x scripts/package-linux-deb.sh
+          ./scripts/package-linux-deb.sh "${{ steps.package_meta.outputs.version }}" "${{ steps.package_meta.outputs.file_name }}"
+
+      - name: Upload Linux package to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: |
+            ${{ steps.package_meta.outputs.file_name }}

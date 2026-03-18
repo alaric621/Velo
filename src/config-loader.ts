@@ -20,6 +20,10 @@ export interface LoadConfigResult {
   initialized: boolean;
 }
 
+export interface InitConfigOptions extends LoadConfigOptions {
+  force?: boolean;
+}
+
 export function resolveConfigPath(options: LoadConfigOptions = {}): string {
   const argv = options.argv ?? process.argv.slice(2);
   const env = options.env ?? process.env;
@@ -42,6 +46,18 @@ export function resolveConfigPath(options: LoadConfigOptions = {}): string {
 export async function loadConfigs(options: LoadConfigOptions = {}): Promise<LoadConfigResult> {
   const configPath = resolveConfigPath(options);
   const initialized = await ensureConfigFile(configPath);
+  const configs = await fs.readJson(configPath);
+
+  return {
+    configs: configs as ScaffoldConfig[],
+    configPath,
+    initialized,
+  };
+}
+
+export async function initConfigFile(options: InitConfigOptions = {}): Promise<LoadConfigResult> {
+  const configPath = resolveConfigPath(options);
+  const initialized = await writeConfigFile(configPath, options.force === true);
   const configs = await fs.readJson(configPath);
 
   return {
@@ -89,6 +105,15 @@ function resolveConfigBaseDir({
 
 async function ensureConfigFile(configPath: string): Promise<boolean> {
   if (await fs.pathExists(configPath)) {
+    return false;
+  }
+
+  await writeConfigFile(configPath, true);
+  return true;
+}
+
+async function writeConfigFile(configPath: string, overwrite: boolean): Promise<boolean> {
+  if (!overwrite && (await fs.pathExists(configPath))) {
     return false;
   }
 
