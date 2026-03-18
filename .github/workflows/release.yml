@@ -54,11 +54,13 @@ jobs:
           files: |
             velo-${{ github.ref_name }}.tar.gz
 
-      - name: Dispatch Linux package workflow
+      - name: Dispatch platform package workflows
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh workflow run linux-package.yml --ref main -f tag_name="${GITHUB_REF_NAME}"
+          gh workflow run macos-package.yml --ref main -f tag_name="${GITHUB_REF_NAME}"
+          gh workflow run windows-package.yml --ref main -f tag_name="${GITHUB_REF_NAME}"
 
   publish-dev:
     if: github.ref == 'refs/heads/main'
@@ -147,8 +149,10 @@ jobs:
           files: |
             velo-${{ steps.dev_meta.outputs.name }}.tar.gz
 
-      - name: Dispatch Linux package workflow
+      - name: Dispatch platform package workflows
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh workflow run linux-package.yml --ref main -f tag_name="${{ steps.dev_meta.outputs.tag }}"
+          gh workflow run macos-package.yml --ref main -f tag_name="${{ steps.dev_meta.outputs.tag }}"
+          gh workflow run windows-package.yml --ref main -f tag_name="${{ steps.dev_meta.outputs.tag }}"

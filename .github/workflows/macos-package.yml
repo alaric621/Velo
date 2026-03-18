@@ -1,0 +1,67 @@
+name: macOS Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Release tag to package
+        required: true
+        type: string
+
+concurrency:
+  group: macos-package-${{ github.event.inputs.tag_name }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos-package:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test
+        run: pnpm run test -- --run
+
+      - name: Compute package metadata
+        id: package_meta
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag_name }}"
+          FILE_NAME="velo_${TAG}_darwin_universal.tar.gz"
+          echo "file_name=${FILE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Build macOS package
+        shell: bash
+        run: |
+          tar -czf "${{ steps.package_meta.outputs.file_name }}" dist package.json README.md
+
+      - name: Upload macOS package to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          files: |
+            ${{ steps.package_meta.outputs.file_name }}
