@@ -2,16 +2,18 @@ name: Release
 
 on:
   push:
+    branches:
+      - dev
     tags:
       - 'v*'
 
 jobs:
-  publish:
+  publish-prod:
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: read
-      id-token: write
+      contents: write
 
     steps:
       - name: Checkout
@@ -21,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: https://registry.npmjs.org
           cache: pnpm
 
       - name: Setup pnpm
@@ -38,7 +39,100 @@ jobs:
       - name: Test
         run: pnpm run test -- --run
 
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Pack build artifact
+        run: |
+          tar -czf velo-${GITHUB_REF_NAME}.tar.gz dist package.json README.md
+
+      - name: Create GitHub Release (stable)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            velo-${{ github.ref_name }}.tar.gz
+
+  publish-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.32.1 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test
+        run: pnpm run test -- --run
+
+      - name: Build dev release metadata
+        id: dev_meta
+        shell: bash
+        run: |
+          TS=$(date -u +%Y%m%d%H%M%S)
+          TAG="dev-${TS}"
+          NAME="dev.${TS}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Pack build artifact
+        run: |
+          tar -czf velo-${{ steps.dev_meta.outputs.name }}.tar.gz dist package.json README.md
+
+      - name: Create or update dev tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = '${{ steps.dev_meta.outputs.tag }}';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = context.sha;
+            try {
+              await github.rest.git.createRef({
+                owner,
+                repo,
+                ref: `refs/tags/${tag}`,
+                sha
+              });
+            } catch (e) {
+              if (e.status === 422) {
+                await github.rest.git.updateRef({
+                  owner,
+                  repo,
+                  ref: `tags/${tag}`,
+                  sha,
+                  force: true
+                });
+              } else {
+                throw e;
+              }
+            }
+
+      - name: Create GitHub Release (dev pre-release)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.dev_meta.outputs.tag }}
+          name: Dev ${{ steps.dev_meta.outputs.name }}
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
+          files: |
+            velo-${{ steps.dev_meta.outputs.name }}.tar.gz
