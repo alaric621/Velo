@@ -3,7 +3,7 @@
 `velo` 是一个基于配置驱动的脚手架 CLI。首次运行时会自动在用户配置目录生成配置文件，随后优先读取用户配置；如果你显式传入配置路径，也会优先使用该路径。通过交互选择模板后按顺序执行：
 
 1. `pre` hook（预检）
-2. `copy`（复制模板文件到当前目录）
+2. `run` 任务队列（按顺序执行 `copy` / `shell`）
 3. `post` hook（初始化动作）
 
 ## 配置加载顺序 📚
@@ -29,25 +29,25 @@
     "title": "vue-core",
     "description": "Vue 基础核心",
     "include": ["router", "pinia"],
-    "copy": ["./mock_templates/core"],
-    "hook": [
-      { "event": "pre", "command": "echo '--- [PRE] 检查 Node 环境 ---'", "description": "环境预检" },
-      { "event": "post", "command": "echo '--- [POST] 正在安装 Vue 核心依赖 ---'", "description": "基础安装" }
-    ]
+    "run": [
+      { "type": "copy", "paths": ["./mock_templates/core"] },
+      { "type": "shell", "command": "echo '--- [POST] 正在安装 Vue 核心依赖 ---'", "description": "基础安装" }
+    ],
+    "hook": [{ "event": "pre", "command": "echo '--- [PRE] 检查 Node 环境 ---'", "description": "环境预检" }]
   },
   {
     "title": "router",
     "description": "路由插件",
-    "copy": ["./mock_templates/router"],
-    "hook": [
-      { "event": "post", "command": "echo '--- [POST] 配置路由表 ---'", "description": "路由初始化" }
+    "run": [
+      { "type": "copy", "paths": ["./mock_templates/router"] },
+      { "type": "shell", "command": "echo '--- [POST] 配置路由表 ---'", "description": "路由初始化" }
     ]
   },
   {
     "title": "pinia",
     "description": "状态管理",
-    "hook": [
-      { "event": "post", "command": "echo '--- [POST] 安装 Pinia 并创建 Store ---'", "description": "状态机初始化" }
+    "run": [
+      { "type": "shell", "command": "echo '--- [POST] 安装 Pinia 并创建 Store ---'", "description": "状态机初始化" }
     ]
   },
   {
@@ -71,7 +71,7 @@
 | `title` | `string` | 是 | 模板唯一标识。 |
 | `description` | `string` | 否 | 交互菜单中的提示信息。 |
 | `include` | `string[]` | 否 | 子模块标题列表；在交互中递归选择。 |
-| `copy` | `string[]` | 否 | 需要复制到当前工作目录的源路径。 |
+| `run` | `{ type, ... }[]` | 否 | 任务队列，支持 `type: "copy"`（`paths` 必填）和 `type: "shell"`（`command` 必填）。 |
 | `hook` | `{ event, command, description? }[]` | 否 | 命令钩子，`event` 仅支持 `pre` 或 `post`。 |
 
 ## 运行方式 🚀
@@ -146,7 +146,7 @@ velo/
 ├── src/
 │   ├── index.ts            # CLI 入口
 │   ├── prompts.ts          # 交互式模板/子模块选择
-│   ├── engine.ts           # hook 执行与 copy 逻辑
+│   ├── engine.ts           # hook 执行与 run 任务逻辑
 │   ├── types.ts            # 配置类型定义
 │   └── config/velo.json    # 默认配置
 ├── dist/                   # 编译产物

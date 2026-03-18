@@ -41,27 +41,47 @@ export async function runHooks(config: ScaffoldConfig, type: 'pre' | 'all' | 'po
   }
 }
 
-/**
- * 执行单个配置任务的文件复制
- */
-export async function runCopy(config: ScaffoldConfig) {
-  if (!config.copy || config.copy.length === 0) return;
-
+async function runCopyPaths(title: string, paths: string[]) {
   const s = p.spinner();
-  s.start(`📂 [${config.title}] 正在同步文件...`);
+  s.start(`📂 [${title}] 正在同步文件...`);
   
-  for (const sourcePath of config.copy) {
+  for (const sourcePath of paths) {
     try {
       if (await fs.pathExists(sourcePath)) {
         await fs.copy(sourcePath, process.cwd(), { overwrite: true });
       } else {
         throw new Error(`找不到路径: ${sourcePath}`);
       }
-    } catch (err: any) {
-      s.stop(`❌ [${config.title}] 文件同步失败`);
-      // 这里的 err 会被抛出并在 main 函数中被捕获
+    } catch (err) {
+      s.stop(`❌ [${title}] 文件同步失败`);
       throw err; 
     }
   }
-  s.stop(`✅ [${config.title}] 文件同步完成`);
+  s.stop(`✅ [${title}] 文件同步完成`);
+}
+
+export async function runTasks(config: ScaffoldConfig) {
+  if (!config.run || config.run.length === 0) return;
+
+  for (const task of config.run) {
+    if (task.type === 'copy') {
+      const paths = task.paths ?? [];
+      if (paths.length === 0) {
+        throw new Error(`[${config.title}] copy 任务缺少 paths 配置`);
+      }
+      await runCopyPaths(config.title, paths);
+      continue;
+    }
+
+    p.log.step(`🚀 [${config.title}] 正在执行: ${task.description || task.command}`);
+    try {
+      await execa(task.command, {
+        shell: true,
+        stdio: 'inherit',
+        cwd: process.cwd()
+      });
+    } catch {
+      throw new Error(`[${config.title}] shell 任务执行失败: ${task.command}`);
+    }
+  }
 }

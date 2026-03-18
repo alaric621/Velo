@@ -2,7 +2,7 @@
 import * as p from '@clack/prompts';
 import { execa } from 'execa';
 import { initConfigFile, loadConfigs } from './config-loader';
-import { runCopy, runHooks } from './engine';
+import { runHooks, runTasks } from './engine';
 import { createWorkflow } from './prompts';
 
 async function main() {
@@ -26,7 +26,7 @@ async function main() {
 
     for (const workflow of workflows) {
       await runHooks(workflow, 'pre');
-      await runCopy(workflow);
+      await runTasks(workflow);
       await runHooks(workflow, 'post');
     }
 

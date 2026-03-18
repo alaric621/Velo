@@ -6,31 +6,39 @@
                   "router",
                   "pinia"
             ],
-            "copy": [
-                  "./mock_templates/core"
+            "run": [
+                  {
+                        "type": "copy",
+                        "paths": [
+                              "./mock_templates/core"
+                        ]
+                  },
+                  {
+                        "type": "shell",
+                        "command": "echo '--- [POST] 正在安装 Vue 核心依赖 ---'",
+                        "description": "基础安装"
+                  }
             ],
             "hook": [
                   {
                         "event": "pre",
                         "command": "echo '--- [PRE] 检查 Node 环境 ---'",
                         "description": "环境预检"
-                  },
-                  {
-                        "event": "post",
-                        "command": "echo '--- [POST] 正在安装 Vue 核心依赖 ---'",
-                        "description": "基础安装"
                   }
             ]
       },
       {
             "title": "router",
             "description": "🛣️ 路由插件 (测试节点)",
-            "copy": [
-                  "./mock_templates/router"
-            ],
-            "hook": [
+            "run": [
                   {
-                        "event": "post",
+                        "type": "copy",
+                        "paths": [
+                              "./mock_templates/router"
+                        ]
+                  },
+                  {
+                        "type": "shell",
                         "command": "echo '--- [POST] 配置路由表 ---'",
                         "description": "路由初始化"
                   }
@@ -39,9 +47,9 @@
       {
             "title": "pinia",
             "description": "🍍 状态管理 (测试节点)",
-            "hook": [
+            "run": [
                   {
-                        "event": "post",
+                        "type": "shell",
                         "command": "echo '--- [POST] 安装 Pinia 并创建 Store ---'",
                         "description": "状态机初始化"
                   }

@@ -4,10 +4,23 @@ export interface Hook {
   description?: string;
 }
 
+export interface RunCopyTask {
+  type: 'copy';
+  paths?: string[];
+}
+
+export interface RunShellTask {
+  type: 'shell';
+  command: string;
+  description?: string;
+}
+
+export type RunTask = RunCopyTask | RunShellTask;
+
 export interface ScaffoldConfig {
   title: string;
   description?: string;
   include?: string[];
-  copy?: string[];
+  run?: RunTask[];
   hook?: Hook[];
 }

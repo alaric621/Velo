@@ -74,7 +74,7 @@ describe('config-loader', () => {
     tempRoots.push(root);
 
     const configPath = path.join(root, '.config', 'velo', 'config.json');
-    const customConfigs = [{ title: 'custom-template', copy: ['./x'] }];
+    const customConfigs = [{ title: 'custom-template', run: [{ type: 'copy', paths: ['./x'] }] }];
 
     await fs.ensureDir(path.dirname(configPath));
     await fs.writeJson(configPath, customConfigs, { spaces: 2 });
