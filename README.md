@@ -1,14 +1,27 @@
 # velo
 
-`velo` 是一个基于配置驱动的脚手架 CLI。当前项目默认读取 [`src/config/velo.json`](src/config/velo.json)，通过交互选择模板后按顺序执行：
+`velo` 是一个基于配置驱动的脚手架 CLI。首次运行时会自动在用户配置目录生成配置文件，随后优先读取用户配置；如果你显式传入配置路径，也会优先使用该路径。通过交互选择模板后按顺序执行：
 
 1. `pre` hook（预检）
 2. `copy`（复制模板文件到当前目录）
 3. `post` hook（初始化动作）
 
-## 当前内置配置
+## 配置加载顺序
 
-配置文件：`src/config/velo.json`
+1. `velo --config /path/to/config.json`
+2. `VELO_CONFIG_PATH=/path/to/config.json velo`
+3. 用户配置文件
+4. 首次运行时由内置默认配置自动初始化用户配置文件
+
+默认用户配置位置：
+
+- Linux: `~/.config/velo/config.json`
+- macOS: `~/Library/Application Support/velo/config.json`
+- Windows: `%APPDATA%\\velo\\config.json`
+
+## 当前默认配置模板
+
+内置默认模板文件：`src/config/velo.json`
 
 ```json
 [
@@ -86,6 +99,25 @@ node dist/index.js
 ```bash
 pnpm link --global
 velo
+```
+
+指定自定义配置：
+
+```bash
+velo --config ./velo.config.json
+```
+
+初始化默认配置：
+
+```bash
+velo config init
+velo config init --force
+```
+
+编辑配置：
+
+```bash
+velo config edit
 ```
 
 ## 项目结构
