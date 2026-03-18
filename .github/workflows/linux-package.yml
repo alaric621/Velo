@@ -1,13 +1,15 @@
 name: Linux Package
 
 on:
-  release:
-    types:
-      - published
-      - prereleased
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: Release tag to package
+        required: true
+        type: string
 
 concurrency:
-  group: linux-package-${{ github.event.release.id }}
+  group: linux-package-${{ github.event.inputs.tag_name }}
   cancel-in-progress: true
 
 jobs:
@@ -21,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event.inputs.tag_name }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -48,7 +50,7 @@ jobs:
         id: package_meta
         shell: bash
         run: |
-          TAG="${{ github.event.release.tag_name }}"
+          TAG="${{ github.event.inputs.tag_name }}"
           if [[ "${TAG}" == v* ]]; then
             VERSION="${TAG#v}"
           else
@@ -66,6 +68,6 @@ jobs:
       - name: Upload Linux package to release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.release.tag_name }}
+          tag_name: ${{ github.event.inputs.tag_name }}
           files: |
             ${{ steps.package_meta.outputs.file_name }}
