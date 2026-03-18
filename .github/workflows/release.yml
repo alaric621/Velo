@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - dev
+      - main
     tags:
       - 'v*'
 
@@ -54,7 +54,7 @@ jobs:
             velo-${{ github.ref_name }}.tar.gz
 
   publish-dev:
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
