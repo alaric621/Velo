@@ -1,8 +1,61 @@
 [
       {
-            "title": "vue",
-            "include": [],
-            "copy": [],
-            "hook": []
+            "title": "vue-core",
+            "description": "📦 Vue 基础核心 (测试节点)",
+            "include": [
+                  "router",
+                  "pinia"
+            ],
+            "copy": [
+                  "./mock_templates/core"
+            ],
+            "hook": [
+                  {
+                        "event": "pre",
+                        "command": "echo '--- [PRE] 检查 Node 环境 ---'",
+                        "description": "环境预检"
+                  },
+                  {
+                        "event": "post",
+                        "command": "echo '--- [POST] 正在安装 Vue 核心依赖 ---'",
+                        "description": "基础安装"
+                  }
+            ]
+      },
+      {
+            "title": "router",
+            "description": "🛣️ 路由插件 (测试节点)",
+            "copy": [
+                  "./mock_templates/router"
+            ],
+            "hook": [
+                  {
+                        "event": "post",
+                        "command": "echo '--- [POST] 配置路由表 ---'",
+                        "description": "路由初始化"
+                  }
+            ]
+      },
+      {
+            "title": "pinia",
+            "description": "🍍 状态管理 (测试节点)",
+            "hook": [
+                  {
+                        "event": "post",
+                        "command": "echo '--- [POST] 安装 Pinia 并创建 Store ---'",
+                        "description": "状态机初始化"
+                  }
+            ]
+      },
+      {
+            "title": "error-test",
+            "description": "⚠️ 故障模拟 (专门测试熔断)",
+            "hook": [
+                  {
+                        "event": "pre",
+                        "command": "non-existent-command-123",
+                        "description": "故意报错的预检"
+                  }
+            ]
       }
 ]
