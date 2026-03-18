@@ -1,0 +1,28 @@
+{
+  "name": "velo",
+  "version": "1.0.0",
+  "description": "A minimal config-driven scaffold CLI",
+  "main": "dist/index.js",
+  "bin": {
+    "velo": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc --watch",
+    "test": "vitest"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [],
+  "author": "alaric <alaric851@gmail.com> (http://bing.com)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.32.1",
+  "devDependencies": {
+    "@clack/prompts": "^1.1.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.3.5",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

@@ -1,0 +1,47 @@
+# --- 依赖与编译 ---
+node_modules/
+example/
+dist/
+lib-cov/
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+# --- 打包与临时文件 ---
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+.pnpm-debug.log*
+.npm/
+.eslintcache
+.cache/
+temp/
+
+# --- 测试与覆盖率 ---
+coverage/
+.nyc_output/
+
+# --- 环境变量与本地配置 ---
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+
+# --- 编辑器/IDE ---
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- TypeScript ---
+tsbuildinfo
